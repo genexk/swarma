@@ -6,8 +6,13 @@ from django.shortcuts import render
 # Create your views here.
 from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.renderers import JSONRenderer,BrowsableAPIRenderer
 from api.serializers import * 
 from api.models import Node
+from api.utils.dynamic_inventory import inv
+from api.utils.runplaybook import runplaybook
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -30,3 +35,16 @@ class NodeViewSet(viewsets.ModelViewSet):
     """
     queryset = Node.objects.all()
     serializer_class = NodeSerializer
+
+class GenAnsibleInv(APIView):
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+    def get(self, request, format=None):
+        i = inv()
+        return Response(i.gen())
+
+
+class RunPlaybook(APIView):
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+    def get(self, request, format=None):
+        r = runplaybook()
+        return Response(r.run())

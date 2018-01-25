@@ -13,7 +13,8 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
         model = Group
         fields = ('url', 'name')
 
-class NodeSerializer(serializers.HyperlinkedModelSerializer):
+class NodeSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = Node 
-        fields = ('hostname', 'ip', 'cluster', 'role', 'locked')
+        fields = ('hostname', 'ip','cluster',  'role', 'locked')
