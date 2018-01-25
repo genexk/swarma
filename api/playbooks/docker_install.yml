@@ -1,0 +1,45 @@
+---
+# this playbook installs docker on the Centos dist of Linux
+#
+
+- hosts: all
+  gather_facts: True
+  tasks:
+    - name: uninstall default docker packages
+      yum:
+        name: "{{ item }}"
+        state: removed
+      with_items:
+        - docker
+        - docker-common
+        - docker-selinux
+        - docker-engine
+    
+    - name: install required packages
+      yum:
+        name: "{{ item }}"
+        state: installed
+      with_items:
+        - yum-utils
+        - device-mapper-persistent-data
+        - lvm2
+
+    - name: add docker repo
+      yum_repository:
+        name: docker-ce
+        description: Docker-ce repo
+        baseurl: https://download.docker.com/linux/centos/docker-ce.repo
+        gpgcheck: no
+
+    - name: install docker-ce
+      yum:
+        name: docker-ce
+        state: present
+
+    - name: start docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+     
