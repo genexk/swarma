@@ -48,6 +48,9 @@ image:
 from ansible.module_utils.basic import *
 import docker
 import netifaces as ni
+import re
+import subprocess
+
 
 class swarm_helper:
     error = ""
@@ -61,20 +64,24 @@ class swarm_helper:
     init = False
     client = docker.from_env()
     def __init__(self, info=False, role = None, locked = None, token = None, ip = None, port = None, init = False):
-        self.info = False
-        self.role = None
-        self.locked = None
-        self.token = None
-        self.ip = None
-        self.port = None
-        self.init = False
+        self.info = info
+        self.role = role
+        self.locked = locked
+        self.token = token
+        self.ip = ip
+        self.port = port
+        self.init = init
     
     def get_info(self):
-        return client.info()
+        return self.client.info()
 
     def init_cluster(self):
+        print('init_cluster')
         out = False
         port = ""
+        manager_token = ""
+        worker_token = ""
+        result = {}
         if self.port != None:
             port = ":"+self.port
         if self.ip == None:
@@ -84,14 +91,23 @@ class swarm_helper:
                 if iface[0] == 'e':
                     first_iface = iface
             if first_iface == None:
-                self.error += 'Cannot find a physical interface, please specify the interface name. Available ifaces: %s\n'%ni.interfaces()
+                self.error += 'Cannot find a physical interface, please specifythe ip or the interface name. Available ifaces: %s\n'%ni.interfaces()
             else:
                 full_adv_addr = first_iface+port
-                out = client.swarm.init(advertise_addr = full_adv_addr) 
         else:
             full_adv_addr = self.ip+port
-            out = client.swarm.init(advertise_addr = full_adv_addr)
-        if out:
+        try:    
+            out = self.client.swarm.init(advertise_addr = full_adv_addr, force_new_cluster=False)
+        except docker.errors.APIError as e:
+            self.error += 'Failed init new Swarm cluster: %s\n'%e
+        proc = subprocess.Popen(['docker', 'info','--format','"{{json .}}"'], stdout=subprocess.PIPE)
+        raw_out = proc.communicate()[0]
+        #rc, raw_out, err = module.run_command('docker info --format "{{json .}}"', executable=executable, use_unsafe_shell=shell, encoding=None)
+        raw_out = raw_out.strip()
+        info_json = json.loads(raw_out[1:-1])
+        
+        if info_json['Swarm']['LocalNodeState']=='active':
+            out = True
             proc = subprocess.Popen(['docker', 'swarm', 'join-token','manager'],stdout=subprocess.PIPE)  
             raw_out = proc.communicate()[0]
             r = re.search(r'docker swarm.*token (.*)', raw_out)
@@ -101,10 +117,30 @@ class swarm_helper:
             raw_out = proc.communicate()[0]
             r = re.search(r'docker swarm.*token (.*)', raw_out)
             worker_token = r.group(1)
-        return out
+        result ={'success': out, 'manager_token': manager_token, 'worker_token': worker_token, 'error': self.error}
+        return result
+
+    def role_mod(self):
+        pass
+
+    def lock_state(self):
+        pass 
+
+    def run(self):
+        swarm_helper_output = {}
+        if self.info:
+            swarm_helper_output['get_info_output'] = self.get_info()
+        if self.init:
+            swarm_helper_output['init_cluster_output'] = self.init_cluster()
+        if self.role:
+            swarm_helper_out['role_mod_output'] = self.role_mod()
+        if not self.init:
+            swarm_helper_out['lock_state_output'] = self.lock_state()        
+            
         
 def main():
     module_args = dict(
+        name = dict(type='str', required=False),
         role = dict(type='str', required=False),
         locked = dict(type='bool', required=False),
         token = dict(type='str', required=False),
@@ -115,16 +151,15 @@ def main():
     )
     
     module = AnsibleModule(module_args)
-    
+     
     info = module.params['info']
     role = module.params['role']
-    
-    info_out = {}
-    if info:
-        client = docker.from_env()
-        info_out = client.info()
-    
-    module.exit_json(changed=False, result=info_out)
+    init = module.params['init']
+    ip = module.params['ip']
+
+    helper = swarm_helper(info = info, role = role, init = init, ip  = ip )
+    helper_result = helper.run()
+    module.exit_json(changed=False, result = helper_result)
 
 
 if __name__=='__main__':

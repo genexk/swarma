@@ -1,8 +1,10 @@
 ---
 - hosts: all
-  gather_facts: False
+  gather_facts: True 
   tasks:
   - name: test docker swarm module
     docker_swarm:
+      info: False
       init: True
+      ip: "{{ ansible_ens160.ipv4.address }}" 
       
