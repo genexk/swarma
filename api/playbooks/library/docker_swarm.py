@@ -75,6 +75,74 @@ class swarm_helper:
     def get_info(self):
         return self.client.info()
 
+    def get_node_ls(self):
+        proc = subprocess.Popen(['docker','node','ls','--format','"{{json .}}"'], stdout = subprocess.PIPE)
+        raw_out = proc.communicate()[0]
+        result = [json.loads(node) for node in raw_out.replace('"{', '{').replace('}"\n', '}\n').strip('\n').split()]
+        return result
+
+    def get_self_node_status(self):
+        for node in get_node_ls():
+            if node['Self']:
+                return node
+        return None
+
+    def get_node_status(self, hostname):
+        for node in get_node_ls():
+            if node['Hostname']==hostname:
+                return node
+        return None
+
+    def is_ready(self, current_node=True, hostname = None):
+        if current_node:
+            return get_self_node_status()['Status'] == 'Ready'
+        else:
+            return get_node_status(hostname)['Status'] == 'Ready'
+    
+    def is_leader(self, current_node=True, hostname = None):
+        if current_node:
+            return get_self_node_status()['ManagerStatus'] == 'Leader'
+        else:
+            return get_node_status(hostname)['ManagerStatus'] == 'Leader'
+
+    def is_manager(self, current_node=True, hostname = None):
+        if current_node:
+            return get_self_node_status()['ManagerStatus'] == 'Leader' or get_self_node_status()['ManagerStatus'] == 'Reachable'
+        else:
+            return get_node_status(hostname)['ManagerStatus'] == 'Leader' or get_node_status()['ManagerStatus'] == 'Reachable'
+
+    def _is_active(self, current_node=True, hostname = None):
+        if current_node:
+            return get_self_node_status()['ManagerStatus'] == 'Leader'
+        else:
+            return get_node_status(hostname)['ManagerStatus'] == 'Leader'
+
+    def is_active(self):
+        data = self.get_info()
+        if data['Swarm']['LocalNodeState']=='active':
+            return True
+        return False
+
+    def set_node_manager():
+        pass
+
+    def set_node_worker():
+        pass
+    
+    def 
+
+    
+    def role_mod(self):
+        if self.role == 'manager':
+            if not self.is_manager():
+                self.set_node_manager()
+        if self.role == 'worker':
+            if self.is_manager():
+                self.set_node_worker()
+
+    def 
+            
+
     def init_cluster(self):
         print('init_cluster')
         out = False
@@ -120,8 +188,11 @@ class swarm_helper:
         result ={'success': out, 'manager_token': manager_token, 'worker_token': worker_token, 'error': self.error}
         return result
 
+    def join(self, token, remote_addr):
+        return self.client.join(remote_addrs = remote_addr, token = token)
+    def get_current_role(self
     def role_mod(self):
-        pass
+        
 
     def lock_state(self):
         pass 
