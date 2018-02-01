@@ -63,6 +63,9 @@ class swarm_helper:
     port = None
     init = False
     client = docker.from_env()
+
+    swarm_helper_output = {}
+
     def __init__(self, info=False, role = None, locked = None, token = None, ip = None, port = None, init = False):
         self.info = info
         self.role = role
@@ -194,15 +197,15 @@ class swarm_helper:
         pass 
 
     def run(self):
-        swarm_helper_output = {}
         if self.info:
-            swarm_helper_output['get_info_output'] = self.get_info()
+            self.swarm_helper_output['get_info_output'] = self.get_info()
         if self.init:
-            swarm_helper_output['init_cluster_output'] = self.init_cluster()
+            self.swarm_helper_output['init_cluster_output'] = self.init_cluster()
         if self.role:
-            swarm_helper_out['role_mod_output'] = self.role_mod()
+            self.swarm_helper_output['role_mod_output'] = self.role_mod()
         if not self.init:
-            swarm_helper_out['lock_state_output'] = self.lock_state()        
+            self.swarm_helper_output['lock_state_output'] = self.lock_state()        
+        return self.swarm_helper_output
             
         
 def main():
