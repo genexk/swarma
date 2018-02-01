@@ -129,7 +129,6 @@ class swarm_helper:
     def set_node_worker():
         pass
     
-    def 
 
     
     def role_mod(self):
@@ -140,7 +139,6 @@ class swarm_helper:
             if self.is_manager():
                 self.set_node_worker()
 
-    def 
             
 
     def init_cluster(self):
@@ -190,8 +188,6 @@ class swarm_helper:
 
     def join(self, token, remote_addr):
         return self.client.join(remote_addrs = remote_addr, token = token)
-    def get_current_role(self
-    def role_mod(self):
         
 
     def lock_state(self):
