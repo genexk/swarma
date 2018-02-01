@@ -4,5 +4,5 @@
   tasks:
   - name: test docker swarm module
     docker_swarm:
-      init: True
+      info: True
       

@@ -1,7 +1,6 @@
 ---
 # this playbook installs docker on the Centos dist of Linux
 #
-
 - hosts: all
   gather_facts: True
   tasks:
@@ -14,7 +13,7 @@
         - docker-common
         - docker-selinux
         - docker-engine
-    
+
     - name: install required packages
       yum:
         name: "{{ item }}"
@@ -23,13 +22,12 @@
         - yum-utils
         - device-mapper-persistent-data
         - lvm2
+        - python-devel
+        - libevent-devel
+        - gcc
 
     - name: add docker repo
-      yum_repository:
-        name: docker-ce
-        description: Docker-ce repo
-        baseurl: https://download.docker.com/linux/centos/docker-ce.repo
-        gpgcheck: no
+      shell: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 
     - name: install docker-ce
       yum:
@@ -42,4 +40,12 @@
         state: started
         enabled: yes
 
-     
+    - name: install pip
+      shell: curl https://bootstrap.pypa.io/get-pip.py | python
+
+    - name: install docker_py
+      pip:
+        name: "{{ item }}"
+      with_items:
+        - docker
+        - netifaces
