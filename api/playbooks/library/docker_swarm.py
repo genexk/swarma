@@ -137,6 +137,7 @@ class swarm_helper:
         self.client.swarm.leave(force=True)
  
     def role_mod(self):
+        out = None
         if self.role == 'manager':
             if not self.is_manager():
                 out = self.set_node_manager()
