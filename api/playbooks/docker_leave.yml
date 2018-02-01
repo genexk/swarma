@@ -1,0 +1,9 @@
+---
+- hosts: all
+  gather_facts: False
+  tasks:
+  - name: force node to leave swarm
+    docker_swarm:
+      info: True
+      role: inactive
+      

@@ -133,15 +133,20 @@ class swarm_helper:
         pass
     
 
-    
+    def set_node_inactive(self): 
+        self.client.swarm.leave(force=True)
+ 
     def role_mod(self):
         if self.role == 'manager':
             if not self.is_manager():
-                self.set_node_manager()
+                out = self.set_node_manager()
         if self.role == 'worker':
             if self.is_manager():
-                self.set_node_worker()
-
+                out = self.set_node_worker()
+        if self.role == 'inactive':
+            if self.is_active():
+                out = self.set_node_inactive()
+        return out
             
 
     def init_cluster(self):
@@ -205,6 +210,8 @@ class swarm_helper:
             self.swarm_helper_output['role_mod_output'] = self.role_mod()
         if not self.init:
             self.swarm_helper_output['lock_state_output'] = self.lock_state()        
+        self.swarm_helper_output['error'] = self.error
+      
         return self.swarm_helper_output
             
         
