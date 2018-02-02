@@ -62,11 +62,12 @@ class swarm_helper:
     ip = None
     port = None
     init = False
+    remote_addrs = None
     client = docker.from_env()
 
     swarm_helper_output = {}
 
-    def __init__(self, info=False, role = None, locked = None, token = None, ip = None, port = None, init = False):
+    def __init__(self, info=False, role = None, locked = None, token = None, ip = None, port = None, init = False, remote_addrs=None):
         self.info = info
         self.role = role
         self.locked = locked
@@ -74,7 +75,7 @@ class swarm_helper:
         self.ip = ip
         self.port = port
         self.init = init
-    
+        self.remote_addrs = remote_addrs
     def get_info(self):
         return self.client.info()
 
@@ -85,40 +86,40 @@ class swarm_helper:
         return result
 
     def get_self_node_status(self):
-        for node in get_node_ls():
+        for node in self.get_node_ls():
             if node['Self']:
                 return node
         return None
 
     def get_node_status(self, hostname):
-        for node in get_node_ls():
+        for node in self.get_node_ls():
             if node['Hostname']==hostname:
                 return node
         return None
 
     def is_ready(self, current_node=True, hostname = None):
         if current_node:
-            return get_self_node_status()['Status'] == 'Ready'
+            return self.get_self_node_status()['Status'] == 'Ready'
         else:
-            return get_node_status(hostname)['Status'] == 'Ready'
+            return self.get_node_status(hostname)['Status'] == 'Ready'
     
     def is_leader(self, current_node=True, hostname = None):
         if current_node:
-            return get_self_node_status()['ManagerStatus'] == 'Leader'
+            return self.get_self_node_status()['ManagerStatus'] == 'Leader'
         else:
-            return get_node_status(hostname)['ManagerStatus'] == 'Leader'
+            return self.get_node_status(hostname)['ManagerStatus'] == 'Leader'
 
     def is_manager(self, current_node=True, hostname = None):
         if current_node:
-            return get_self_node_status()['ManagerStatus'] == 'Leader' or get_self_node_status()['ManagerStatus'] == 'Reachable'
+            return self.get_self_node_status()['ManagerStatus'] == 'Leader' or self.get_self_node_status()['ManagerStatus'] == 'Reachable'
         else:
-            return get_node_status(hostname)['ManagerStatus'] == 'Leader' or get_node_status()['ManagerStatus'] == 'Reachable'
+            return self.get_node_status(hostname)['ManagerStatus'] == 'Leader' or self.get_node_status()['ManagerStatus'] == 'Reachable'
 
     def _is_active(self, current_node=True, hostname = None):
         if current_node:
-            return get_self_node_status()['ManagerStatus'] == 'Leader'
+            return self.get_self_node_status()['ManagerStatus'] == 'Leader'
         else:
-            return get_node_status(hostname)['ManagerStatus'] == 'Leader'
+            return self.get_node_status(hostname)['ManagerStatus'] == 'Leader'
 
     def is_active(self):
         data = self.get_info()
@@ -126,15 +127,17 @@ class swarm_helper:
             return True
         return False
 
-    def set_node_manager():
-        pass
+    def set_node_manager(self):
+        success = self.client.swarm.join(join_toekn=self.token, remote_addrs = self.remote_addrs)
+        return success
 
     def set_node_worker():
-        pass
+        success = self.client.swarm.join(join_toekn=self.token, remote_addrs = self.remote_addrs)
+        return success 
     
 
     def set_node_inactive(self): 
-        self.client.swarm.leave(force=True)
+        return self.client.swarm.leave(force=True)
  
     def role_mod(self):
         out = None
@@ -226,16 +229,26 @@ def main():
         port = dict(type='str', required=False),
         init = dict(type='bool', required=False),
         info = dict(type='bool', default=False),
+        remote_addrs = dict(type='str', required=False),
     )
     
     module = AnsibleModule(module_args)
-     
+    
+    name = module.params['name'] 
     info = module.params['info']
     role = module.params['role']
     init = module.params['init']
     ip = module.params['ip']
+    port = module.params['port']
+    locked = module.params['locaked']
+    token = module.params['token']
+    remote_addrs = module.params['remote_addrs']     #comma separated list of remote address 
 
-    helper = swarm_helper(info = info, role = role, init = init, ip  = ip )
+    if remote_addrs:
+        manager_addrs = [x.strip() for x in remote_addrs.split(',')
+
+    helper = swarm_helper(name=name, info=info, role=role, init=init, ip=ip, port=port, 
+                             locked=locked, token=token)
     helper_result = helper.run()
     module.exit_json(changed=False, result = helper_result)
 
