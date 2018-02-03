@@ -28,6 +28,7 @@ urlpatterns = [
     url(r'^api/', include(router.urls)),
     url(r'^api/inventory', views.GenAnsibleInv.as_view()),
     url(r'^api/runplaybook', views.RunPlaybook.as_view()),
+    url(r'^api/echo', views.Echo.as_view()),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^.*', include('ui.urls')),
 ]

@@ -13,7 +13,8 @@ from api.serializers import *
 from api.models import Node
 from api.utils.dynamic_inventory import inv
 from api.utils.runplaybook import runplaybook
-
+import yaml
+import json
 class UserViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
@@ -48,3 +49,14 @@ class RunPlaybook(APIView):
     def get(self, request, format=None):
         r = runplaybook()
         return Response(r.run())
+
+class Echo(APIView):
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+
+    def post(self, request, format=None):
+        data=request.data
+        print(data["data"])
+        print(type(data["data"]))
+        nodes = yaml.load(json.loads(data["data"])["nodes"])
+        print(nodes)
+        return Response(data["data"])

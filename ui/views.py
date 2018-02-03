@@ -7,4 +7,5 @@ from django.shortcuts import render
 from django.http import HttpResponse
 
 def index(request):
-    return HttpResponse("home page")
+    return render(request, 'ui/init.html', {})
+    #return HttpResponse("home page")
