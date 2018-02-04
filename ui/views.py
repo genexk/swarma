@@ -7,5 +7,10 @@ from django.shortcuts import render
 from django.http import HttpResponse
 
 def index(request):
+    print('index')
     return render(request, 'ui/init.html', {})
     #return HttpResponse("home page")
+
+def get_cluster_info(request):
+    print('get_cluster_info')
+    return render(request, 'ui/get_cluster_info.html', {})

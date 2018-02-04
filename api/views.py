@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer,BrowsableAPIRenderer
 from api.serializers import * 
-from api.models import Node
+from api.models import Cluster, Node
 from api.utils.dynamic_inventory import inv
 from api.utils.runplaybook import runplaybook
 import yaml
@@ -60,3 +60,33 @@ class Echo(APIView):
         nodes = yaml.load(json.loads(data["data"])["nodes"])
         print(nodes)
         return Response(data["data"])
+
+class get_cluster_info(APIView):
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+    def post(self, request, format=None):
+        data=request.data
+        print(data["data"])
+        clustername = json.loads(data["data"])["clustername"]
+        c = Cluster.objects.get(clustername = clustername)
+        n = Node.objects.filter(cluster = c)
+        print(c)
+        print(n)
+        output = {'clustername': c.clustername,
+                  'datetime_added': c.datetime_added,
+                  'join_token_manager': c.join_token_manager,
+                  'join_token_worker': c.join_token_worker, 
+                  'number_of_nodes': len(n),
+                  'nodes': {},
+                  }
+        for node in n:
+            output['nodes'][node.hostname] = {
+                                              'ip': node.ip,
+                                              'role': node.role,
+                                              'locked': node.locked,
+                                              }
+        return Response(output)
+
+    def get(self, request, format=None):
+        return Response([c.clustername for c in Cluster.objects.all()])
+
+

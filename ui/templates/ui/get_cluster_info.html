@@ -1,0 +1,95 @@
+<html>
+<head>
+{% load static %}
+<script src="{% static "ui/jquery.min.js" %}"></script>
+<script src="{% static "ui/renderjson.js" %}"></script>
+
+<link rel="stylesheet" href="{% static "ui/stylesheet.css" %}">
+<script>
+renderjson.set_show_to_level(2);
+function output(inp) {
+    document.body.appendChild(document.createElement('pre')).innerHTML = inp;
+}
+
+function output1(inp) {
+    $("#info").innerHTML=inp;
+}
+
+function syntaxHighlight(json) {
+    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+        var cls = 'number';
+        if (/^"/.test(match)) {
+            if (/:$/.test(match)) {
+                cls = 'key';
+            } else {
+                cls = 'string';
+            }
+        } else if (/true|false/.test(match)) {
+            cls = 'boolean';
+        } else if (/null/.test(match)) {
+            cls = 'null';
+        }
+        return '<span class="' + cls + '">' + match + '</span>';
+    });
+}
+
+
+$(document).ready(function() {
+var list_clusters = $.ajax( {
+      method:"GET",
+      url: "/api/get_cluster_info",
+      data: {csrfmiddlewaretoken: "{{ csrf_token }}",
+             },
+  })
+     .done(function( data ) {
+         document.getElementById("info").appendChild(renderjson(data));
+         //$("#info").html( data );
+         var str = JSON.stringify(data, undefined, 4);
+         output1(str)
+      });
+
+
+$("#get_cluster_info").click(function(){
+  var clustername = $("#cluster_name").val();
+
+  this.disabled = true;
+  $("#cluster_display").html("Processing...");
+  $("#cluster_display").show(20);
+
+  var $this = $(this);
+  var postdata = JSON.stringify({
+            clustername: clustername,
+            });
+
+
+
+  var action_by_user = $.ajax( {
+      method:"POST",
+      url: "/api/get_cluster_info",
+      data: {csrfmiddlewaretoken: "{{ csrf_token }}",
+             data: postdata},
+  })
+     .done(function( data ) {
+         $("#get_cluster_info").prop('disabled', false);
+         //$("#cluster_display").html(str);
+         document.getElementById("cluster_display").appendChild(renderjson(data));
+      });
+  });
+});
+</script>
+</head>
+<body>
+
+<div id="info">
+    <pre></pre>
+</div>
+<div>
+  Cluster name:<br>
+  <input type="text" id="cluster_name" ><br>
+  <button id="get_cluster_info" >Create</button>
+</div>
+<div id="cluster_display">
+</div>
+</body>
+</html>

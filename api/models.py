@@ -11,7 +11,9 @@ class Cluster(models.Model):
     meta = models.TextField(blank=True)
     datetime_added = models.DateTimeField(auto_now_add = True)
     datetime_modified = models.DateTimeField(auto_now = True) 
-    
+    join_token_manager = models.CharField(max_length=200, blank=True)
+    join_token_worker = models.CharField(max_length=200, blank=True)
+        
     def __str__(self):
         return 'Cluster: %s'%self.clustername
 

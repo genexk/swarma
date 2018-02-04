@@ -5,5 +5,7 @@ from . import views
 
 
 urlpatterns = [
-    url('', views.index, name='index'),
+    url(r'cluster',views.get_cluster_info),
+    url(r'$^', views.index, name='index'),
 ]
+
