@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
 import json
+import yaml
 import os
 import string
 from random import *
@@ -20,42 +21,41 @@ class inv:
         return output
 
     def to_file(self, inv):
-        filename = 'tmp/%s.hosts'%(self.rand())
+        filename = 'tmp/%s.yml'%(self.rand())
+        print(inv)
         with open(filename, 'w+') as f:
-            f.write(inv)
+            yaml.dump(inv, f, default_flow_style=False)
         return filename
 
     def gen(self):
+        inventory = {}
         for c in Cluster.objects.all():
-            self.inventory[c.clustername]=[]
+            inventory[c.clustername]={}
             for n in Node.objects.filter(cluster=c):
-                self.inventory[c.clustername].append(n.hostname)
-                self.inventory['_meta']['hostvars'][n.hostname]={'role': n.role,
-                                                                 'locked': n.locked,}
-        return self.inventory
+                inventory[c.clustername][n.hostname]={}
+                inventory[c.clustername][n.hostname]={'role': n.role,
+                                                      'locked': n.locked,}
+        return inventory
 
 
     def gen_cluster_inv(self, clustername,exclude=[]):
         inventory = {}
-        inventory['_meta']={}
-        inventory['_meta']['hostvars']={}
         c = Cluster.objects.get(clustername=clustername)
+        inventory[c.clustername]={'hosts':{}}
         for n in Node.objects.filter(cluster=c):
              if n.hostname not in exclude:
-                 inventory[c.clustername].append(n.hostname)
-                 inventory['_meta']['hostvars'][n.hostname]={'role': n.role,
-                                                             'locked': n.locked,}
+                 inventory[c.clustername]['hosts'][n.hostname]={}
+                 inventory[c.clustername]['hosts'][n.hostname]={'role': n.role,
+                                                                'locked': n.locked,}
         return inventory 
 
     def gen_node_inv(self, hostname):
         inventory = {}
-        inventory['_meta']={}
-        inventory['_meta']['hostvars']={}
         c = Cluster.objects.get(clustername=clustername)
         n = Node.objects.get(hostname=hostname)
-        inventory[c.clustername].append(n.hostname)
-        inventory['_meta']['hostvars'][n.hostname]={'role': n.role,
-                                                    'locked': n.locked,}
+        inventory[c.clustername][n.hostname]={}
+        inventory[c.clustername][n.hostname]={'role': n.role,
+                                              'locked': n.locked,}
         return inventory
 
         

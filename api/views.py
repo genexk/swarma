@@ -105,7 +105,10 @@ class init_cluster(APIView):
         return True
     def run_init(self, cluster, nodes):
         print(self.save_to_model(cluster,nodes))
-        print(inv().to_file(''))
+        inv_file = inv().to_file(inv().gen_cluster_inv(cluster))
+        playbook_file = 'api/playbooks/ping.yml'
+        r = runplaybook()
+        print(r.run_any(playbook_file=playbook_file, inventory_file=inv_file))
         print(os.getcwd())
  
     def post(self, request, format=None):
