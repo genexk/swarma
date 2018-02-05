@@ -22,7 +22,7 @@ $("#create_button").click(function(){
 
   var action_by_user = $.ajax( {
       method:"POST",
-      url: "/api/echo",
+      url: "/api/init",
       data: {csrfmiddlewaretoken: "{{ csrf_token }}",
              data: postdata},
   })

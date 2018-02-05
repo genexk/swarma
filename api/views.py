@@ -15,6 +15,7 @@ from api.utils.dynamic_inventory import inv
 from api.utils.runplaybook import runplaybook
 import yaml
 import json
+import os
 class UserViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
@@ -93,12 +94,15 @@ class get_cluster_info(APIView):
 
 class init_cluster(APIView):
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
-    def run_init(cluster, nodes):
+    def run_init(self, cluster, nodes):
+        print(inv().to_file(''))
+        print(os.getcwd())
         pass
  
     def post(self, request, format=None):
         data=request.data
         output = {'success': False, 'error':""}
+        self.run_init("", "")
         try:
             clustername = yaml.load(json.loads(data["data"])["clustername"])
             nodes = yaml.load(json.loads(data["data"])["nodes"])
@@ -115,6 +119,8 @@ class init_cluster(APIView):
                 if Node == "" or Nodes.objects.filter(hostname=hostname).exists():
                      output['error'] += "Node hostname must not be empty or node with the same hostname already exists"
                      return Response(output)
+        
+        return self.run_init(clustername, nodes)
          
         
         
