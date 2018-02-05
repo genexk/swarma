@@ -38,7 +38,7 @@ class Node(models.Model):
         default=INACTIVE,
     )
 
-    
+    status = models.CharField(max_length=15, null=True,blank=True) 
     locked = models.BooleanField()
     meta = models.TextField(blank=True)
     datetime_added = models.DateTimeField(auto_now_add = True)

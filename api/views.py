@@ -90,3 +90,35 @@ class get_cluster_info(APIView):
         return Response([c.clustername for c in Cluster.objects.all()])
 
 
+
+class init_cluster(APIView):
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+    def run_init(cluster, nodes):
+        pass
+ 
+    def post(self, request, format=None):
+        data=request.data
+        output = {'success': False, 'error':""}
+        try:
+            clustername = yaml.load(json.loads(data["data"])["clustername"])
+            nodes = yaml.load(json.loads(data["data"])["nodes"])
+        except Exception as e:
+            print(e)
+            output['error']+="%s"%(e)
+            return Response(output)
+    
+        if clustername == None or Cluster.objects.filter(clustername=clustername).exists():     
+            output['error']+="Clustername must not be empty or cluster with the same name already exists"
+            return Response(output)
+        else:
+            for hostname in nodes.keys():
+                if Node == "" or Nodes.objects.filter(hostname=hostname).exists():
+                     output['error'] += "Node hostname must not be empty or node with the same hostname already exists"
+                     return Response(output)
+         
+        
+        
+        
+        
+    
+

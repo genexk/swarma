@@ -13,7 +13,6 @@ class inv:
         pass
 
     def gen(self):
-        
         for c in Cluster.objects.all():
             self.inventory[c.clustername]=[]
             for n in Node.objects.filter(cluster=c):
@@ -23,6 +22,20 @@ class inv:
         return self.inventory
 
 
+    def gen_cluster_inv(self, clustername):
+        inventory = {}
+        inventory['_meta']={}
+        inventory['_meta']['hostvars']={}
+        c = Cluster.objects.get(clustername=clustername)
+        for n in Node.objects.filter(cluster=c):
+             inventory[c.clustername].append(n.hostname)
+             inventory['_meta']['hostvars'][n.hostname]={'role': n.role,
+                                                         'locked': n.locked,}
+        return inventory 
+
+    def gen_node_inv(self, hostname):
+        pass   
+        
 if __name__=="__main__":
     i = inv()
     print(json.dumps(i.gen()))
