@@ -20,13 +20,10 @@ class inv:
         return output
 
     def to_file(self, inv):
-        cwd = os.getcwd()
         filename = 'tmp/%s.hosts'%(self.rand())
-        print(filename)
         with open(filename, 'w+') as f:
-            f.write('one line')
-        print(cwd)
-        return cwd
+            f.write(inv)
+        return filename
 
     def gen(self):
         for c in Cluster.objects.all():

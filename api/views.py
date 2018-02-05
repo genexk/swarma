@@ -94,18 +94,28 @@ class get_cluster_info(APIView):
 
 class init_cluster(APIView):
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+
+
+    def save_to_model(self, cluster, nodes):
+        c = Cluster.objects.create(clustername = cluster)
+        print(c)
+        for k in nodes.keys():
+            n = Node.objects.create(hostname=k, role=nodes[k]['role'], cluster=c, locked=False)
+            print(n)
+        return True
     def run_init(self, cluster, nodes):
+        print(self.save_to_model(cluster,nodes))
         print(inv().to_file(''))
         print(os.getcwd())
-        pass
  
     def post(self, request, format=None):
         data=request.data
         output = {'success': False, 'error':""}
-        self.run_init("", "")
         try:
             clustername = yaml.load(json.loads(data["data"])["clustername"])
+            print(clustername)
             nodes = yaml.load(json.loads(data["data"])["nodes"])
+            print(nodes)
         except Exception as e:
             print(e)
             output['error']+="%s"%(e)
@@ -116,11 +126,15 @@ class init_cluster(APIView):
             return Response(output)
         else:
             for hostname in nodes.keys():
-                if Node == "" or Nodes.objects.filter(hostname=hostname).exists():
+                if Node == "" or Node.objects.filter(hostname=hostname).exists():
                      output['error'] += "Node hostname must not be empty or node with the same hostname already exists"
                      return Response(output)
-        
-        return self.run_init(clustername, nodes)
+        print(clustername)
+        print(type(nodes))
+        print(nodes) 
+        output['success']=self.run_init(clustername, nodes)
+
+        return Response( output) 
          
         
         
