@@ -2,7 +2,7 @@
 # this playbook installs docker on the Centos dist of Linux
 #
 - hosts: all
-  gather_facts: True
+  gather_facts: False
   tasks:
     - name: uninstall default docker packages
       yum:

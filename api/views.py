@@ -109,6 +109,8 @@ class init_cluster(APIView):
         playbook_file = 'api/playbooks/ping.yml'
         r = runplaybook()
         print(r.run_any(playbook_file=playbook_file, inventory_file=inv_file))
+        playbook_file= 'api/playbooks/docker_install.yml'
+        print(r.run_any(playbook_file=playbook_file, inventory_file=inv_file))
         print(os.getcwd())
  
     def post(self, request, format=None):
