@@ -1,0 +1,47 @@
+<html>
+<head>
+{% load static %}
+<script src="{% static "ui/jquery.min.js" %}"></script>
+<script>
+$(document).ready(function() {
+$("#create_button").click(function(){
+  var clustername = $("#cluster_name").val();
+
+  this.disabled = true;
+  $("#info").html("Processing...");
+  $("#info").show(20);
+
+  var $this = $(this);
+  var postdata = JSON.stringify({
+            clustername: clustername,
+            });
+
+
+
+  var action_by_user = $.ajax( {
+      method:"POST",
+      url: "/api/destroy",
+      data: {csrfmiddlewaretoken: "{{ csrf_token }}",
+             data: postdata},
+  })
+     .done(function( data ) {
+         $("#create_button").prop('disabled', false);
+         $("#info").html( data );
+      });
+  });
+});
+</script>
+</head>
+<body>
+
+<div id="info">
+    <pre></pre>
+</div>
+<div>
+  Cluster name:<br>
+  <input type="text" id="cluster_name" ><br>
+  <button id="create_button" >Destroy</button>
+</div>
+
+</body>
+</html>

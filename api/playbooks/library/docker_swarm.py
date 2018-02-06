@@ -67,7 +67,7 @@ class swarm_helper:
 
     swarm_helper_output = {}
 
-    def __init__(self, info=False, role = None, locked = None, token = None, ip = None, port = None, init = False, remote_addrs=None):
+    def __init__(self, info=False, name = None, role = None, locked = None, token = None, ip = None, port = None, init = False, remote_addrs=None):
         self.info = info
         self.role = role
         self.locked = locked
@@ -76,6 +76,7 @@ class swarm_helper:
         self.port = port
         self.init = init
         self.remote_addrs = remote_addrs
+
     def get_info(self):
         return self.client.info()
 
@@ -240,18 +241,16 @@ def main():
     init = module.params['init']
     ip = module.params['ip']
     port = module.params['port']
-    locked = module.params['locaked']
+    locked = module.params['locked']
     token = module.params['token']
     remote_addrs = module.params['remote_addrs']     #comma separated list of remote address 
 
     if remote_addrs:
-        manager_addrs = [x.strip() for x in remote_addrs.split(',')
-
-    helper = swarm_helper(name=name, info=info, role=role, init=init, ip=ip, port=port, 
-                             locked=locked, token=token)
+        manager_addrs = [x.strip() for x in remote_addrs.split(',')]
+    helper = swarm_helper(name=name, info=info, role=role, init=init, ip=ip, port=port, locked=locked, token=token)
     helper_result = helper.run()
     module.exit_json(changed=False, result = helper_result)
 
 
 if __name__=='__main__':
-   main()
+    main()

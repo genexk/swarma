@@ -144,6 +144,41 @@ class init_cluster(APIView):
         
         
         
+class destroy_cluster(APIView):
+    def run_destroy(self,clustername):
+        try: 
+            c = Cluster.objects.get(clustername=clustername) 
+        except Exception as e:
+            print(type(e))
+            print(e)
+            return False
+        inv_file = inv().to_file(inv().gen_cluster_inv(clustername))
+        playbook_file = 'api/playbooks/ping.yml'
+        r = runplaybook()
+        print(r.run_any(playbook_file=playbook_file, inventory_file=inv_file))
+        playbook_file= 'api/playbooks/docker_leave.yml'
+        result = r.run_any(playbook_file=playbook_file, inventory_file=inv_file)
+        print(result['output'].keys())
+        for instance in result['output']['stats'].keys():
+            print(instance)
+            if result['output']['stats'][instance]['failures'] !=0:
+                print('failures in running leave playbook')
+                return False
+        print(Node.objects.filter(cluster=c).delete())
+        print(c.delete())
+        return True 
         
+    def post(self, request, format=None):
+        data=request.data
+        output = {'success': False, 'error': ""}
+        try:
+            clustername = yaml.load(json.loads(data["data"])["clustername"])
+            print(clustername)
+        except Exception as e:
+            print(e)
+            output['error']+="%s"%(e)
+            return Response(output)         
+        output['success'] = self.run_destroy(clustername)
+        return Response(output)
     
 

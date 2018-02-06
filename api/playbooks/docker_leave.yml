@@ -4,6 +4,6 @@
   tasks:
   - name: force node to leave swarm
     docker_swarm:
-      info: True
+      info: False
       role: inactive
       

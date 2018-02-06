@@ -14,3 +14,7 @@ def index(request):
 def get_cluster_info(request):
     print('get_cluster_info')
     return render(request, 'ui/get_cluster_info.html', {})
+
+def destroy_cluster(request):
+    print('destroy_cluster')
+    return render(request, 'ui/destroy.html',{})
