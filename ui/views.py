@@ -8,7 +8,7 @@ from django.http import HttpResponse
 
 def index(request):
     print('index')
-    return render(request, 'ui/init.html', {})
+    return render(request, 'ui/index.html', {})
     #return HttpResponse("home page")
 
 def get_cluster_info(request):
@@ -18,3 +18,7 @@ def get_cluster_info(request):
 def destroy_cluster(request):
     print('destroy_cluster')
     return render(request, 'ui/destroy.html',{})
+
+def dashboard(request):
+    print('dashbard')
+    return render(request, 'ui/dash.html', {})
