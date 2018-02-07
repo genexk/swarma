@@ -58,7 +58,9 @@ class swarm_helper:
     info = False
     role = None
     locked = None
-    token = None
+    token_m = None
+    token_w = None
+ 
     ip = None
     port = None
     init = False
@@ -67,11 +69,12 @@ class swarm_helper:
 
     swarm_helper_output = {}
 
-    def __init__(self, info=False, name = None, role = None, locked = None, token = None, ip = None, port = None, init = False, remote_addrs=None):
+    def __init__(self, info=False, name = None, role = None, locked = None, token_m = None, token_w=None, ip = None, port = None, init = False, remote_addrs=None):
         self.info = info
         self.role = role
         self.locked = locked
-        self.token = token
+        self.token_m = token_m
+        self.token_w = token_w
         self.ip = ip
         self.port = port
         self.init = init
@@ -110,7 +113,7 @@ class swarm_helper:
         else:
             return self.get_node_status(hostname)['ManagerStatus'] == 'Leader'
 
-    def is_manager(self, current_node=True, hostname = None):
+    def _is_manager(self, current_node=True, hostname = None):
         if current_node:
             return self.get_self_node_status()['ManagerStatus'] == 'Leader' or self.get_self_node_status()['ManagerStatus'] == 'Reachable'
         else:
@@ -127,13 +130,30 @@ class swarm_helper:
         if data['Swarm']['LocalNodeState']=='active':
             return True
         return False
+    
+    def is_manager(self):
+        data = self.get_info()
+        if self.is_active() and data['Swarm']['ControlAvailable']==True:
+            return True
+        return False
 
+    def is_worker(self):
+        data = self.get_info()
+        if self.is_active() and data['Swarm']['ControlAvailable']==False:
+            return True
+        return False
+        
+  
     def set_node_manager(self):
-        success = self.client.swarm.join(join_toekn=self.token, remote_addrs = self.remote_addrs)
+        token = self.token_m.split()[0]
+        addrs = [self.token_m.split()[1]]
+        success = self.client.swarm.join(join_token=token, remote_addrs = addrs)
         return success
 
-    def set_node_worker():
-        success = self.client.swarm.join(join_toekn=self.token, remote_addrs = self.remote_addrs)
+    def set_node_worker(self):
+        token = self.token_w.split()[0]
+        addrs = [self.token_w.split()[1]]
+        success = self.client.swarm.join(join_token=token, remote_addrs = addrs)
         return success 
     
 
@@ -146,7 +166,7 @@ class swarm_helper:
             if not self.is_manager():
                 out = self.set_node_manager()
         if self.role == 'worker':
-            if self.is_manager():
+            if not self.is_worker():
                 out = self.set_node_worker()
         if self.role == 'inactive':
             if self.is_active():
@@ -192,7 +212,7 @@ class swarm_helper:
             r = re.search(r'docker swarm.*token (.*)', raw_out)
             manager_token = r.group(1)
 
-            proc = subprocess.Popen(['docker', 'swarm', 'join-token','manager'],stdout=subprocess.PIPE)
+            proc = subprocess.Popen(['docker', 'swarm', 'join-token','worker'],stdout=subprocess.PIPE)
             raw_out = proc.communicate()[0]
             r = re.search(r'docker swarm.*token (.*)', raw_out)
             worker_token = r.group(1)
@@ -225,7 +245,8 @@ def main():
         name = dict(type='str', required=False),
         role = dict(type='str', required=False),
         locked = dict(type='bool', required=False),
-        token = dict(type='str', required=False),
+        token_m = dict(type='str', required=False),
+        token_w = dict(type='str', required=False),
         ip = dict(type='str', required=False),
         port = dict(type='str', required=False),
         init = dict(type='bool', required=False),
@@ -242,12 +263,13 @@ def main():
     ip = module.params['ip']
     port = module.params['port']
     locked = module.params['locked']
-    token = module.params['token']
+    token_m = module.params['token_m']
+    token_w = module.params['token_w']
     remote_addrs = module.params['remote_addrs']     #comma separated list of remote address 
 
     if remote_addrs:
         manager_addrs = [x.strip() for x in remote_addrs.split(',')]
-    helper = swarm_helper(name=name, info=info, role=role, init=init, ip=ip, port=port, locked=locked, token=token)
+    helper = swarm_helper(name=name, info=info, role=role, init=init, ip=ip, port=port, locked=locked, token_m=token_m, token_w=token_w)
     helper_result = helper.run()
     module.exit_json(changed=False, result = helper_result)
 

@@ -1,0 +1,11 @@
+---
+- hosts: all
+  gather_facts: True 
+  vars:
+    foo: bar
+  tasks:
+    - name: echo
+      shell: echo {{ hostvars['role'] }}
+    - debug:
+        msg: "wtf is this {{ string }}. foo: {{ foo }}. and it is a {{ role }}"
+

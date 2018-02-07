@@ -1,0 +1,11 @@
+---
+- hosts: all
+  gather_facts: False
+  tasks:
+  - name: init swarm on target node 
+    docker_swarm:
+      info: False
+      role: "{{ role }}"
+      token_m: "{{ token_m }}"
+      token_w: "{{ token_w }}"
+      

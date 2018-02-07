@@ -48,18 +48,28 @@ class inv:
                  inventory[c.clustername]['hosts'][n.hostname]={'role': n.role,
                                                                 'locked': n.locked,}
         return inventory 
-
+    
     def gen_node_inv(self, hostname):
         inventory = {}
-        c = Cluster.objects.get(clustername=clustername)
+        c = 'all'
+        inventory[c]={'hosts':{}}
         n = Node.objects.get(hostname=hostname)
-        inventory[c.clustername][n.hostname]={}
-        inventory[c.clustername][n.hostname]={'role': n.role,
-                                              'locked': n.locked,}
+        inventory[c]['hosts'][n.hostname]={}
+        inventory[c]['hosts'][n.hostname]={'role': n.role,
+                                           'locked': n.locked,}
         return inventory
 
         
+    def attach_vars(self, inv, clustername, var_dict):
+        inv[clustername]['vars'] = var_dict
+        return inv
 
+    def attach_node_vars(self, inv, clustername, hostname, var_dict):
+        for k,v in var_dict.items():
+            inv[clustername]['hosts'][hostname][k]=v
+        return inv
+        
+        
         
 if __name__=="__main__":
     i = inv()

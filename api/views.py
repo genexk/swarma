@@ -104,15 +104,49 @@ class init_cluster(APIView):
             print(n)
         return True
     def run_init(self, cluster, nodes):
+        # save to model
         print(self.save_to_model(cluster,nodes))
+        # generate inventory with all nodes
         inv_file = inv().to_file(inv().gen_cluster_inv(cluster))
+        # run ping playbook to check initial connectivity
         playbook_file = 'api/playbooks/ping.yml'
         r = runplaybook()
         print(r.run_any(playbook_file=playbook_file, inventory_file=inv_file))
+        # run docker install playbook to setup the environment
         playbook_file= 'api/playbooks/docker_install.yml'
-        print(r.run_any(playbook_file=playbook_file, inventory_file=inv_file))
-        print(os.getcwd())
- 
+        ##print(r.run_any(playbook_file=playbook_file, inventory_file=inv_file))
+        # generate inventory for the master node to init swarm cluster
+        for k, v in nodes.items():
+            if v['role'] == 'manager':
+                break
+        inv_file = inv().to_file(inv().gen_node_inv(k))
+        # run docker_init playbook to init swarm cluster
+        playbook_file = 'api/playbooks/docker_init.yml'
+        r = runplaybook()
+        result = r.run_any(playbook_file=playbook_file, inventory_file=inv_file)
+        print(result['output'].keys())
+        print(len(result['output']['plays']))
+        print(result['output']['plays'])
+        # save token to cluster
+        for task in result['output']['plays'][0]['tasks']:
+            if task['task']['name']=="init swarm on target node":
+                manager_token = task['hosts'][k]['result']['init_cluster_output']['manager_token'] 
+                worker_token = task['hosts'][k]['result']['init_cluster_output']['worker_token']
+                c = Cluster.objects.get(clustername=cluster)
+                c.join_token_manager = manager_token
+                c.join_token_worker = worker_token 
+                c.save()
+        # generate inventory file excluding init node
+        temp_inv1 = inv().gen_cluster_inv(clustername=cluster, exclude=[k])
+        # attach tokens
+        temp_inv2 = inv().attach_vars(temp_inv1, cluster, {'token_m': manager_token, 'token_w': worker_token})
+        inv_file = inv().to_file(temp_inv2)       
+        playbook_file = 'api/playbooks/docker_nodes.yml'
+        r = runplaybook()
+        result = r.run_any(playbook_file=playbook_file, inventory_file=inv_file)
+        print(result)
+
+       
     def post(self, request, format=None):
         data=request.data
         output = {'success': False, 'error':""}
