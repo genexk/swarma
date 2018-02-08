@@ -1,8 +1,13 @@
 <html>
 <head>
 {% load static %}
-<script src="{% static "ui/jquery.min.js" %}"></script>
 <script src="{% static "ui/renderjson.js" %}"></script>
+<!-- Bootstrap core CSS -->
+<link href="{% static "ui/bootstrap.min.css" %}" rel="stylesheet">
+
+<!-- Custom styles for this template -->
+<link href="{% static "ui/dashboard.css" %}" rel="stylesheet">
+
 
 <link rel="stylesheet" href="{% static "ui/stylesheet.css" %}">
 <script>
@@ -51,11 +56,7 @@ $("#get_cluster_info").click(function(){
 </head>
 <body>
 
-<div>
-  Cluster name:<br>
-  <input type="text" id="cluster_name" ><br>
-  <button id="get_cluster_info" >Get Cluster Info</button>
-</div>
+
 
 <div id="info">
     <pre></pre>
@@ -63,5 +64,49 @@ $("#get_cluster_info").click(function(){
 
 <div id="cluster_display">
 </div>
+
+
+
+        <main role="main" class="col-md-9 ">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+            <h1 class="h2">Overview</h1>
+            <div class="btn-toolbar mb-2 mb-md-0">
+              <button class="btn btn-sm btn-outline-secondary">
+                <span data-feather="plus-square"></span>
+                Create New Cluster
+              </button>
+            </div>
+          </div>
+
+
+          <div class="row">
+                <div class="col-md-6">
+                  <div class="input-group mb-3">
+                    <input type="text" class="form-control" id="cluster_name" placeholder="Cluster Name" aria-label="Cluster Namee" aria-describedby="basic-addon2">
+                    <div class="input-group-append">
+                      <button class="btn btn-outline-secondary" type="button" id="get_cluster_info">Button</button>
+                    </div>
+                  </div>
+                </div>
+          </div>
+
+        </main>
+      </div>
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="{% static "ui/jquery.min.js" %}" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script>window.jQuery || document.write('<script src="../../../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
+    <script src="{% static "ui/popper.min.js" %}"></script>
+    <script src="{% static "ui/bootstrap.min.js" %}"></script>
+
+    <!-- Icons -->
+    <script src="{% static "ui/feather.min.js" %}"></script>
+    <script>
+      feather.replace()
+    </script>
+
 </body>
 </html>
