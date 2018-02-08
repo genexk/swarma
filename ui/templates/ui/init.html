@@ -5,8 +5,7 @@
 <script>
 $(document).ready(function() {
 $("#create_button").click(function(){
-  var clustername = $("#cluster_name").val();
-  var nodes = $("#nodes").val();
+  var inv = $("#inv").val();
 
   this.disabled = true;
   $("#info").html("Processing...");
@@ -14,8 +13,7 @@ $("#create_button").click(function(){
 
   var $this = $(this);
   var postdata = JSON.stringify({
-            clustername: clustername,
-            nodes: nodes,
+            inv: inv,
             });
 
 
@@ -35,17 +33,46 @@ $("#create_button").click(function(){
 </script>
 </head>
 <body>
+    <main role="main" class="col">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+          <h1 class="h2">Create New Cluster</h1>
+        </div>
 
-<div id="info">
-    <pre></pre>
-</div>
-<div>
-  Cluster name:<br>
-  <input type="text" id="cluster_name" ><br>
-  Node info (yaml):<br>
-  <textarea id="nodes" rows="30" cols="120"></textarea>
-  <button id="create_button" class="btn btn-default btn-lg">Create</button>
-</div>
+        <div class="row">
+          <blockquote class="blockquote">
+            <p class="mb-0">Enter Inventory for the New Cluster (yaml)</p>
+          </blockquote>
+        </div>
+        <div class="row">
+          <textarea class="form-control" id="inv"></textarea>
+          <button id="create_button" class="btn btn-default btn-lg">Create</button>
+        </div>
+
+        <div class="card card-body">
+          <h4 class="card-title">Log</h4>
+          <div class="flex-row">
+            <a class="card-link">Copy to clipboard</a>
+          </div>
+           <p class="card-text" id="info">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+
+        </div>
+    </main>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="{% static "/ui/jquery.min.js" %}" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script>window.jQuery || document.write('<script src="../../../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
+    <script src="{% static "/ui/popper.min.js" %}"></script>
+    <script src="{% static "/ui/bootstrap.min.js" %}"></script>
+
+    <script src="{% static "/ui/jquery.dynatable.js" %}"></script>
+    <!-- Icons -->
+    <script src="{% static "/ui/feather.min.js" %}"></script>
+    <script>
+      feather.replace()
+    </script>
 
 </body>
 </html>

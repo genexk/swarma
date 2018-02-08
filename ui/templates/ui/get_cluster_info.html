@@ -22,9 +22,9 @@ $.fn.create_table = function(data) {
             var td2="<td>"+data[i]["num_nodes"]+"</td>";
             var td3="<td>"+data[i]["datetime_added"]+"</td></tr>";
 
-            this.append(tr+td1+td2+td3); 
+            this.append(tr+td1+td2+td3);
 
-        }   
+        }
       return this;
 };
 var list_clusters = $.ajax( {
@@ -70,17 +70,11 @@ $("#get_cluster_info").click(function(){
 </head>
 <body>
 
-
-
-
-
-
-
         <main role="main" class="col ">
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-            <h1 class="h3">Clusters</h1>
+            <h1 class="h2">Clusters</h1>
             <div class="btn-toolbar mb-2 mb-md-0">
-              <button class="btn btn-sm btn-outline-secondary">
+              <button class="btn btn-sm btn-outline-secondary" id="create_cluster_btn">
                 <span data-feather="plus-square"></span>
                 Create New Cluster
               </button>
@@ -131,6 +125,11 @@ $("#get_cluster_info").click(function(){
     <script src="{% static "/ui/feather.min.js" %}"></script>
     <script>
       feather.replace()
+    </script>
+    <script>
+       $('#create_cluster_btn').click(function() {
+         $('#main_panel').load('/create_cluster');
+       });
     </script>
 
 </body>
