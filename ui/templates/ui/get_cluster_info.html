@@ -47,6 +47,7 @@ $("#get_cluster_info").click(function(){
      .done(function( data ) {
          $("#get_cluster_info").prop('disabled', false);
          //$("#cluster_display").html(str);
+         $("#cluster_display").html("");
          document.getElementById("cluster_display").appendChild(renderjson(data));
       });
   });
@@ -58,12 +59,7 @@ $("#get_cluster_info").click(function(){
 
 
 
-<div id="info">
-    <pre></pre>
-</div>
 
-<div id="cluster_display">
-</div>
 
 
 
@@ -80,14 +76,20 @@ $("#get_cluster_info").click(function(){
 
 
           <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-8">
                   <div class="input-group mb-3">
                     <input type="text" class="form-control" id="cluster_name" placeholder="Cluster Name" aria-label="Cluster Namee" aria-describedby="basic-addon2">
                     <div class="input-group-append">
-                      <button class="btn btn-outline-secondary" type="button" id="get_cluster_info">Button</button>
+                      <button class="btn btn-outline-secondary" type="button" id="get_cluster_info">Search</button>
                     </div>
                   </div>
                 </div>
+          </div>
+          <div class="row">
+            <div id="info">
+            </div>
+
+            <div id="cluster_display"></div>
           </div>
 
         </main>
