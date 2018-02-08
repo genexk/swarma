@@ -34,13 +34,15 @@
           <div class="sidebar-sticky">
             <ul class="nav flex-column">
               <li class="nav-item">
-                <a class="nav-link active" href="#">
+                <a class="nav-link active" id="dashboard" href="#">
+                  <h6>
                   <span data-feather="home"></span>
                   Dashboard <span class="sr-only">(current)</span>
+                  </h6>
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" id="nav_clusters" href="#">
+                <a class="nav-link" id="cluster" href="#">
                   <span data-feather="box"></span>
                   Clusters
                 </a>
@@ -100,7 +102,7 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="{% static "ui/jquery-3.2.1.slim.min.js" %}" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="{% static "ui/jquery.min.js" %}" ></script>
     <script>window.jQuery || document.write('<script src="../../../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
     <script src="{% static "ui/popper.min.js" %}"></script>
     <script src="{% static "ui/bootstrap.min.js" %}"></script>
@@ -111,9 +113,11 @@
       feather.replace()
     </script>
     <script>
-       $('#nav_clusters').click(function() {
-         alert('cluster')
-         $('#main_panel').load("cluster"); 
+       $('#main_panel').load("dashboard");
+       $('.nav-link').click(function() {
+         $('.nav-link').removeClass("active");
+         $(this).addClass("active");
+         $('#main_panel').load($(this).attr("id")); 
        });
     </script>
   </body>

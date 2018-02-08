@@ -7,33 +7,6 @@
 <link rel="stylesheet" href="{% static "ui/stylesheet.css" %}">
 <script>
 renderjson.set_show_to_level(2);
-function output(inp) {
-    document.body.appendChild(document.createElement('pre')).innerHTML = inp;
-}
-
-function output1(inp) {
-    $("#info").innerHTML=inp;
-}
-
-function syntaxHighlight(json) {
-    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
-        var cls = 'number';
-        if (/^"/.test(match)) {
-            if (/:$/.test(match)) {
-                cls = 'key';
-            } else {
-                cls = 'string';
-            }
-        } else if (/true|false/.test(match)) {
-            cls = 'boolean';
-        } else if (/null/.test(match)) {
-            cls = 'null';
-        }
-        return '<span class="' + cls + '">' + match + '</span>';
-    });
-}
-
 
 $(document).ready(function() {
 var list_clusters = $.ajax( {
@@ -49,7 +22,6 @@ var list_clusters = $.ajax( {
          output1(str)
       });
 
-
 $("#get_cluster_info").click(function(){
   var clustername = $("#cluster_name").val();
 
@@ -61,9 +33,6 @@ $("#get_cluster_info").click(function(){
   var postdata = JSON.stringify({
             clustername: clustername,
             });
-
-
-
   var action_by_user = $.ajax( {
       method:"POST",
       url: "/api/get_cluster_info",
@@ -78,17 +47,20 @@ $("#get_cluster_info").click(function(){
   });
 });
 </script>
+
 </head>
 <body>
 
-<div id="info">
-    <pre></pre>
-</div>
 <div>
   Cluster name:<br>
   <input type="text" id="cluster_name" ><br>
   <button id="get_cluster_info" >Get Cluster Info</button>
 </div>
+
+<div id="info">
+    <pre></pre>
+</div>
+
 <div id="cluster_display">
 </div>
 </body>
