@@ -23,14 +23,17 @@
         <main role="main" class="col-md-9 ">
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
             <h1 class="h2">Overview</h1>
-            <div class="btn-toolbar mb-2 mb-md-0">
-              <button class="btn btn-sm btn-outline-secondary">
-                <span data-feather="plus-square"></span>
-                Create New Cluster
-              </button>
-            </div>
           </div>
-
+          <div>
+             <div class="card">
+                <h5 class="card-header">Welcome!</h5>
+                <div class="card-body">
+                  <h5 class="card-title"></h5>
+                  <p class="card-text">This project provides the ability to manage multiple Docker Swarm clusters with a central management tool. swarmA attempts to be a solution for those who want to remotely deploy smaller satellite clusters on IoT (Internet of Things) devices.</p>
+                  <a href="#" id="create_cluster_btn" class="btn btn-primary">Create a New Cluster</a>
+                </div>
+              </div>
+          </div>
 
 
         </main>
@@ -50,7 +53,11 @@
     <script>
       feather.replace()
     </script>
-
+    <script>
+       $('#create_cluster_btn').click(function() {
+         $('#main_panel').load('/create_cluster'); 
+       });
+    </script>
 
   </body>
 </html>

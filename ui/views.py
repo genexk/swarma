@@ -15,6 +15,10 @@ def get_cluster_info(request):
     print('get_cluster_info')
     return render(request, 'ui/get_cluster_info.html', {})
 
+def create_cluster(request):
+    print('create_cluster')
+    return render(request, 'ui/init.html', {})
+
 def destroy_cluster(request):
     print('destroy_cluster')
     return render(request, 'ui/destroy.html',{})
