@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer,BrowsableAPIRenderer
 from api.serializers import * 
 from api.models import Cluster, Node
+from django.db.models import Count
 from api.utils.dynamic_inventory import inv
 from api.utils.runplaybook import runplaybook
 import yaml
@@ -69,6 +70,7 @@ class get_cluster_info(APIView):
         print(data["data"])
         clustername = json.loads(data["data"])["clustername"]
         c = Cluster.objects.get(clustername = clustername)
+        
         n = Node.objects.filter(cluster = c)
         print(c)
         print(n)
@@ -90,7 +92,23 @@ class get_cluster_info(APIView):
     def get(self, request, format=None):
         return Response([c.clustername for c in Cluster.objects.all()])
 
-
+class list_clusters(APIView):
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+    def post(self, request, format=None):
+        data=request.data
+        print(data)
+        per_page = int(data["per_page"])
+        print(per_page)
+        page = int(data["page"])
+        cluster = Cluster.objects.annotate(num_nodes=Count('node'))
+        print(cluster)
+        output = [{'clustername': c.clustername,
+                  'datetime_added': c.datetime_added,
+                  'join_token_manager': c.join_token_manager,
+                  'join_token_worker': c.join_token_worker,
+                  'num_nodes': c.num_nodes,
+                  } for c in cluster]
+        return Response(output)
 
 class init_cluster(APIView):
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)

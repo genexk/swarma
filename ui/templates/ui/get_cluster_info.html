@@ -1,30 +1,42 @@
 <html>
 <head>
 {% load static %}
-<script src="{% static "ui/renderjson.js" %}"></script>
+<script src="{% static "/ui/renderjson.js" %}"></script>
 <!-- Bootstrap core CSS -->
-<link href="{% static "ui/bootstrap.min.css" %}" rel="stylesheet">
+<link href="{% static "/ui/bootstrap.min.css" %}" rel="stylesheet">
 
 <!-- Custom styles for this template -->
-<link href="{% static "ui/dashboard.css" %}" rel="stylesheet">
+<link href="{% static "/ui/dashboard.css" %}" rel="stylesheet">
+<link href="{% static "/ui/jquery.dynatable.css" %}" rel="stylesheet">
 
-
-<link rel="stylesheet" href="{% static "ui/stylesheet.css" %}">
+<link rel="stylesheet" href="{% static "/ui/stylesheet.css" %}">
 <script>
 renderjson.set_show_to_level(2);
 
 $(document).ready(function() {
+$.fn.create_table = function(data) {
+      for(var i=0;i<data.length;i++)
+        {
+            var tr="<tr>";
+            var td1="<th scope=\"row\">"+data[i]["clustername"]+"</th>";
+            var td2="<td>"+data[i]["num_nodes"]+"</td>";
+            var td3="<td>"+data[i]["datetime_added"]+"</td></tr>";
+
+            this.append(tr+td1+td2+td3); 
+
+        }   
+      return this;
+};
 var list_clusters = $.ajax( {
-      method:"GET",
-      url: "/api/get_cluster_info",
+      method:"POST",
+      url: "/api/list_clusters",
       data: {csrfmiddlewaretoken: "{{ csrf_token }}",
+             per_page: 20,
+             page: 1,
              },
   })
      .done(function( data ) {
-         document.getElementById("info").appendChild(renderjson(data));
-         //$("#info").html( data );
-         var str = JSON.stringify(data, undefined, 4);
-         output1(str)
+         $('#cluster-table').create_table(data);
       });
 
 $("#get_cluster_info").click(function(){
@@ -52,6 +64,7 @@ $("#get_cluster_info").click(function(){
       });
   });
 });
+
 </script>
 
 </head>
@@ -65,7 +78,7 @@ $("#get_cluster_info").click(function(){
 
         <main role="main" class="col-md-9 ">
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-            <h1 class="h2">Overview</h1>
+            <h1 class="h3">Clusters</h1>
             <div class="btn-toolbar mb-2 mb-md-0">
               <button class="btn btn-sm btn-outline-secondary">
                 <span data-feather="plus-square"></span>
@@ -87,6 +100,15 @@ $("#get_cluster_info").click(function(){
           </div>
           <div class="row">
             <div id="info">
+                <table class="table table-sm">
+                    <thead>
+                       <th scope="col">Cluster Name</th>
+                       <th scope="col">Number of Nodes</th>
+                       <th scope="col">Date Created</th>
+                    </thead>
+                    <tbody class="table-hover" id="cluster-table" >
+                    </tbody>
+                </table>
             </div>
 
             <div id="cluster_display"></div>
@@ -99,13 +121,14 @@ $("#get_cluster_info").click(function(){
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="{% static "ui/jquery.min.js" %}" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="{% static "/ui/jquery.min.js" %}" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script>window.jQuery || document.write('<script src="../../../../assets/js/vendor/jquery-slim.min.js"><\/script>')</script>
-    <script src="{% static "ui/popper.min.js" %}"></script>
-    <script src="{% static "ui/bootstrap.min.js" %}"></script>
+    <script src="{% static "/ui/popper.min.js" %}"></script>
+    <script src="{% static "/ui/bootstrap.min.js" %}"></script>
 
+    <script src="{% static "/ui/jquery.dynatable.js" %}"></script>
     <!-- Icons -->
-    <script src="{% static "ui/feather.min.js" %}"></script>
+    <script src="{% static "/ui/feather.min.js" %}"></script>
     <script>
       feather.replace()
     </script>
