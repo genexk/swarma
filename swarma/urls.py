@@ -32,6 +32,7 @@ urlpatterns = [
     url(r'^api/init', views.init_cluster.as_view()),
     url(r'^api/destroy', views.destroy_cluster.as_view()),
     url(r'^api/list_clusters', views.list_clusters.as_view()),
+    url(r'^api/list_nodes', views.list_nodes.as_view()),
     url(r'^api/get_cluster_info', views.get_cluster_info.as_view()),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'', include('ui.urls')),

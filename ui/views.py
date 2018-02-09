@@ -12,12 +12,26 @@ def index(request):
     #return HttpResponse("home page")
 
 def clusters(request):
-    print('get_cluster_info')
-    return render(request, 'ui/get_cluster_info.html', {})
+    print('clusters')
+    return render(request, 'ui/clusters.html', {})
 
 def nodes(request):
     print('nodes')
     return render(request, 'ui/nodes.html', {})
+
+def cluster(request):
+    print('cluster')
+    if request.method != 'POST':
+        return render_index(request)
+    else:
+        data = json.loads(request.POST["data"])
+        clustername  = data["clustername"]
+        
+    return render(request, 'ui/cluster.html', {})
+
+def node(request):
+    print('node')
+    return render(request, 'ui/node.html', {})
 
 def create_cluster(request):
     print('create_cluster')
