@@ -18,25 +18,26 @@ $.fn.create_table = function(data) {
       for(var i=0;i<data.length;i++)
         {
             var tr="<tr>";
-            var td1="<th scope=\"row\">"+data[i]["clustername"]+"</th>";
-            var td2="<td>"+data[i]["num_nodes"]+"</td>";
-            var td3="<td>"+data[i]["datetime_added"]+"</td></tr>";
+            var td1="<th scope=\"row\">"+data[i]["hostname"]+"</th>";
+            var td2="<td>"+data[i]["clustername"]+"</td>";
+            var td3="<td>"+data[i]["role"]+"</td>";
+            var td4="<td>"+data[i]["datetime_added"]+"</td></tr>";
 
-            this.append(tr+td1+td2+td3);
+            this.append(tr+td1+td2+td3+td4);
 
         }
       return this;
 };
 var list_clusters = $.ajax( {
       method:"POST",
-      url: "/api/list_clusters",
+      url: "/api/nodes_clusters",
       data: {csrfmiddlewaretoken: "{{ csrf_token }}",
              per_page: 20,
              page: 1,
              },
   })
      .done(function( data ) {
-         $('#cluster-table').create_table(data);
+         $('#node-table').create_table(data);
       });
 
 $("#get_cluster_info").click(function(){
@@ -72,11 +73,11 @@ $("#get_cluster_info").click(function(){
 
         <main role="main" class="col ">
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-            <h1 class="h2">Clusters</h1>
+            <h1 class="h2">Nodes</h1>
             <div class="btn-toolbar mb-2 mb-md-0">
-              <button class="btn btn-sm btn-outline-secondary" id="create_cluster_btn">
+              <button class="btn btn-sm btn-outline-secondary" id="add_node_btn">
                 <span data-feather="plus-square"></span>
-                Create New Cluster
+                Add a New Node
               </button>
             </div>
           </div>
@@ -96,16 +97,17 @@ $("#get_cluster_info").click(function(){
             <div id="info">
                 <table class="table table-striped table-hover">
                     <thead>
+                       <th scope="col">Node Name</th>
                        <th scope="col">Cluster Name</th>
-                       <th scope="col">Number of Nodes</th>
-                       <th scope="col">Date Created</th>
+                       <th scope="col">Role</th>
+                       <th scope="col">Date Added</th>
                     </thead>
-                    <tbody  id="cluster-table" >
+                    <tbody  id="node-table" >
                     </tbody>
                 </table>
             </div>
 
-            <div id="cluster_display"></div>
+            <div id="node_display"></div>
           </div>
 
         </main>

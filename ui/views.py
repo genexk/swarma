@@ -11,9 +11,13 @@ def index(request):
     return render(request, 'ui/index.html', {})
     #return HttpResponse("home page")
 
-def get_cluster_info(request):
+def clusters(request):
     print('get_cluster_info')
     return render(request, 'ui/get_cluster_info.html', {})
+
+def nodes(request):
+    print('nodes')
+    return render(request, 'ui/nodes.html', {})
 
 def create_cluster(request):
     print('create_cluster')

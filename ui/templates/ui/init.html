@@ -1,7 +1,13 @@
 <html>
 <head>
 {% load static %}
-<script src="{% static "ui/jquery.min.js" %}"></script>
+<!-- Bootstrap core CSS -->
+<link href="{% static "/ui/bootstrap.min.css" %}" rel="stylesheet">
+
+<!-- Custom styles for this template -->
+<link href="{% static "/ui/dashboard.css" %}" rel="stylesheet">
+
+<link rel="stylesheet" href="{% static "/ui/stylesheet.css" %}">
 <script>
 $(document).ready(function() {
 $("#create_button").click(function(){
@@ -39,21 +45,46 @@ $("#create_button").click(function(){
         </div>
 
         <div class="row">
-          <blockquote class="blockquote">
-            <p class="mb-0">Enter Inventory for the New Cluster (yaml)</p>
-          </blockquote>
+          <label for="inv">Enter Inventory for the New Cluster</label>
         </div>
-        <div class="row">
-          <textarea class="form-control" id="inv"></textarea>
-          <button id="create_button" class="btn btn-default btn-lg">Create</button>
+        <div class="form-group">
+          <div class="row">
+            <div class="col">
+              <textarea class="form-control" id="inv" rows="15"></textarea>
+            </div>
+            <div class="col">
+               <div class="card">
+                 <div class="card-header">Inventory YAML File Example</div>
+                   <div class="card-body">
+                      <p>clustername:<br />
+                         &nbsp;&nbsp;hosts:<br />
+                         &nbsp;&nbsp;&nbsp;&nbsp;hostname-1:<br />
+                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;role: manager<br />
+                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ip: 1.1.1.1<br />
+                         &nbsp;&nbsp;&nbsp;&nbsp;hostname-2:<br />
+                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;role: worker<br />
+                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ip: 1.1.1.2<br />
+                      </p>
+                   </div>
+               </div>
+            </div>
+          </div>
+          <br />
+          <div class="row justify-content-around">
+            <div class="col">
+              <button id="create_button" class="btn btn-primary btn-lg float-right">Create</button>
+            </div>
+            <div class="col">
+            </div>
+          </div>
         </div>
-
         <div class="card card-body">
           <h4 class="card-title">Log</h4>
           <div class="flex-row">
-            <a class="card-link">Copy to clipboard</a>
+            <a href="#" class="card-link">Copy to clipboard</a>
           </div>
-           <p class="card-text" id="info">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+          <br />
+           <p class="card-text" id="info"></p>
 
         </div>
     </main>
@@ -67,7 +98,6 @@ $("#create_button").click(function(){
     <script src="{% static "/ui/popper.min.js" %}"></script>
     <script src="{% static "/ui/bootstrap.min.js" %}"></script>
 
-    <script src="{% static "/ui/jquery.dynatable.js" %}"></script>
     <!-- Icons -->
     <script src="{% static "/ui/feather.min.js" %}"></script>
     <script>
