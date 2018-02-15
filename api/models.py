@@ -21,7 +21,7 @@ class Cluster(models.Model):
 class Node(models.Model):
     hostname = models.CharField(max_length=100, primary_key=True)
     ip = models.GenericIPAddressField(protocol='IPv4', null=True,blank=True)
-    cluster = models.ForeignKey(Cluster)
+    cluster = models.ForeignKey(Cluster, null=True, on_delete=models.SET_NULL)
 
 
     MASTER = 'master'

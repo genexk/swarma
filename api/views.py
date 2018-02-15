@@ -100,15 +100,37 @@ class list_clusters(APIView):
         per_page = int(data["per_page"])
         print(per_page)
         page = int(data["page"])
-        cluster = Cluster.objects.annotate(num_nodes=Count('node'))
-        print(cluster)
+        clusters = Cluster.objects.annotate(num_nodes=Count('node'))
+        print(clusters)
         output = [{'clustername': c.clustername,
                   'datetime_added': c.datetime_added,
                   'join_token_manager': c.join_token_manager,
                   'join_token_worker': c.join_token_worker,
                   'num_nodes': c.num_nodes,
-                  } for c in cluster]
+                  } for c in clusters]
         return Response(output)
+
+
+class list_nodes(APIView):
+    renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
+    def post(self, request, format=None):
+        data=request.data
+        print(data)
+        per_page = int(data["per_page"])
+        print(per_page)
+        page = int(data["page"])
+        nodes = Node.objects.all()
+        num_nodes = Node.objects.count()
+        output = [{'clustername': n.cluster.clustername,
+                  'hostname': n.hostname,
+                  'datetime_added': n.datetime_added,
+                  'role': n.role,
+                  'ip': n.ip,
+                  'num_nodes': num_nodes,
+                  'status': n.status,
+                  } for n in nodes]
+        return Response(output)
+
 
 class init_cluster(APIView):
     renderer_classes = (JSONRenderer, BrowsableAPIRenderer)
